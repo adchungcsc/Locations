@@ -1,0 +1,168 @@
+openapi: 3.0.0
+info:
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Location API
+  version: 1.0.0
+servers:
+- description: SwaggerHub API Auto Mocking
+  url: https://virtserver.swaggerhub.com/adchungcsc/LocationAPI/1.0.0
+paths:
+  /locations:
+    get:
+      description: |
+        Get all locations
+      operationId: findAllLocations
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Location'
+                type: array
+          description: search results matching criteria
+      summary: Get all locations
+  /location/{locationName}:
+    delete:
+      description: |
+        Get an individual location
+      operationId: deleteLocation
+      parameters:
+      - description: Name of location to delete.
+        explode: false
+        in: path
+        name: locationName
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Location'
+                type: array
+          description: search results matching criteria
+        "400":
+          description: bad input parameter
+      summary: Delete a location
+    get:
+      description: |
+        Get an individual location
+      operationId: findLocation
+      parameters:
+      - description: Name of location to look for.
+        explode: false
+        in: path
+        name: locationName
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Location'
+                type: array
+          description: search results matching criteria
+        "400":
+          description: bad input parameter
+      summary: Find a location
+    post:
+      description: Insert a new location
+      operationId: insertLocation
+      parameters:
+      - description: Name of location to look for.
+        explode: false
+        in: path
+        name: locationName
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: latitude of location to look for.
+        explode: true
+        in: query
+        name: latitude
+        required: true
+        schema:
+          format: float32
+          type: number
+        style: form
+      - description: longitude of location to look for.
+        explode: true
+        in: query
+        name: longitude
+        required: true
+        schema:
+          format: float32
+          type: number
+        style: form
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Location'
+                type: array
+          description: search results matching criteria
+        "400":
+          description: bad input parameter
+      summary: Insert a new location
+    put:
+      description: Insert a new location
+      operationId: updateLocation
+      parameters:
+      - description: Name of location to look for.
+        explode: false
+        in: path
+        name: locationName
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: description of location
+        explode: true
+        in: query
+        name: description
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "201":
+          description: successfully updated location
+        "400":
+          description: bad input parameter
+      summary: Update an existing location
+components:
+  schemas:
+    Location:
+      example:
+        locationName: locationName
+        latitude: 6.027456183070403
+        description: description
+        id: 0
+        longitude: 1.4658129805029452
+      properties:
+        id:
+          type: integer
+        locationName:
+          type: string
+        latitude:
+          format: double
+          type: number
+        longitude:
+          format: double
+          type: number
+        description:
+          type: string
+      type: object
