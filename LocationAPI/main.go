@@ -10,10 +10,10 @@
 package main
 
 import (
+	openapi "github.com/GIT_USER_ID/GIT_REPO_ID/go"
+	"github.com/gorilla/handlers"
 	"log"
 	"net/http"
-
-	openapi "github.com/GIT_USER_ID/GIT_REPO_ID/go"
 )
 
 func main() {
@@ -24,5 +24,5 @@ func main() {
 
 	router := openapi.NewRouter(DefaultApiController)
 
-	log.Fatal(http.ListenAndServe(":8090", router))
+	log.Fatal(http.ListenAndServe(":8090",  handlers.CORS(handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"}), handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"}), handlers.AllowedOrigins([]string{"*"}))(router)))
 }
