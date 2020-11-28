@@ -13,7 +13,28 @@
 </head>
 
 <body>
+<script>
+  function postLocation(){
 
+  }
+
+  function getLocation(){
+
+  }
+</script>
+<p>POST</p>
+<form action="localhost:8090/adchungcsc/LocationAPI/1.0.0/location">
+  <input id="locationName" type="text" />
+  <input id="latitude" type="text" />
+  <input id="longitude" type="text" />
+  <input id="description" type="text" />
+  <input id="submit" type="submit" />
+</form>
+<p>GET</p>
+<form action="localhost:8090/adchungcsc/LocationAPI/1.0.0/location">
+  <input id="searchName" type="text" />
+  <input id="search" onclick="" type="submit" />
+</form>
   <div id="root"></div>
 
   <script src="scripts.js"></script>

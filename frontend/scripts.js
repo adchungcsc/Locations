@@ -37,16 +37,14 @@ fetch(url, {
         h1.textContent = location.locationName
 
         // Create a p and set the text content to the film's description
-         //const p = document.createElement('p')
-         //location.description = location.description.substring(0, 300) // Limit to 300 chars
-         //p.textContent = location.description // End with an ellipses
+         const p = document.createElement('p')
+         p.textContent = `${location.latitude}, ${location.longitude}\n${location.description}`
 
-        // Append the cards to the container element
+
+          // Append the cards to the container element
         container.appendChild(card)
-
-        // Each card will contain an h1 and a p
         card.appendChild(h1)
-        //card.appendChild(p)
+        card.appendChild(p)
       })
 
 
