@@ -1,14 +1,14 @@
-FROM golang:1.10 AS build
-WORKDIR /go/src
-COPY go ./go
-COPY main.go .
+FROM golang:1.15.5 as builder
 
-ENV CGO_ENABLED=0
-RUN go get -d -v ./...
+WORKDIR /app
+COPY . .
 
-RUN go build -a -installsuffix cgo -o openapi .
+RUN GOOS=linux go build -o /app/main ./main.go
 
-FROM scratch AS runtime
-COPY --from=build /go/src/openapi ./
-EXPOSE 8080/tcp
-ENTRYPOINT ["./openapi"]
+FROM ubuntu:18.04
+WORKDIR /
+COPY --from=builder /app/main /
+
+EXPOSE 8090
+
+CMD ["./main"]
