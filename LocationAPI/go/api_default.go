@@ -25,6 +25,7 @@ type DefaultApiController struct {
 
 // NewDefaultApiController creates a default api controller
 func NewDefaultApiController(s DefaultApiServicer) Router {
+	databaseConnect()
 	return &DefaultApiController{ service: s }
 }
 
@@ -34,31 +35,31 @@ func (c *DefaultApiController) Routes() Routes {
 		{
 			"DeleteLocation",
 			strings.ToUpper("Delete"),
-			"/adchungcsc/LocationAPI/1.0.0/location/{locationName}",
+			"/LocationAPI/location/{locationName}",
 			c.DeleteLocation,
 		},
 		{
 			"FindAllLocations",
 			strings.ToUpper("Get"),
-			"/adchungcsc/LocationAPI/1.0.0/locations",
+			"/LocationAPI/locations",
 			c.FindAllLocations,
 		},
 		{
 			"FindLocation",
 			strings.ToUpper("Get"),
-			"/adchungcsc/LocationAPI/1.0.0/location/{locationName}",
+			"/LocationAPI/location/{locationName}",
 			c.FindLocation,
 		},
 		{
 			"InsertLocation",
 			strings.ToUpper("Post"),
-			"/adchungcsc/LocationAPI/1.0.0/location/{locationName}",
+			"/LocationAPI/location/{locationName}",
 			c.InsertLocation,
 		},
 		{
 			"UpdateLocation",
 			strings.ToUpper("Put"),
-			"/adchungcsc/LocationAPI/1.0.0/location/{locationName}",
+			"/LocationAPI/location/{locationName}",
 			c.UpdateLocation,
 		},
 	}

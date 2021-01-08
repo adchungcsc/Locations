@@ -10,7 +10,7 @@
 package main
 
 import (
-	openapi "github.com/GIT_USER_ID/GIT_REPO_ID/go"
+	openapi "github.com/adchungcsc/Locations/go"
 	"github.com/gorilla/handlers"
 	"log"
 	"net/http"

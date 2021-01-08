@@ -13,7 +13,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"log"
+	"os"
 	"strconv"
 )
 
@@ -28,65 +30,27 @@ func NewDefaultApiService() DefaultApiServicer {
 	return &DefaultApiService{}
 }
 
-//func databaseConnect(){
-//	if dbConnection != nil {
-//		return
-//	}
-//	//TODO: un-hard code this and read in connString from a file.
-//	config, err := pgx.ParseConfig("postgresql://maxroach@localhost:26257/defaultdb?sslmode=disable")
-//	if err != nil {
-//		log.Fatal("error configuring the database: ", err)
-//	}
-//
-//	// Connect to the "bank" database.
-//	dbConnection, err := pgx.ConnectConfig(context.Background(), config)
-//	if err != nil {
-//		log.Fatal("error connecting to the database: ", err)
-//	}
-//	defer dbConnection.Close(context.Background())
-//}
+//var databaseConnection *pgx.Conn
 
-// DeleteLocation - Delete a location
-func (s *DefaultApiService) DeleteLocation(locationName string) (Location, error) {
-	var dbConnection *pgx.Conn
-	//TODO: un-hard code this and read in connString from a file (user is also only on my local test DB and not running on a prod DB).
-	config, err := pgx.ParseConfig("postgresql://maxroach@localhost:26257/defaultdb?sslmode=disable")
+var databaseConnection *pgxpool.Pool
+
+func databaseConnect() {
+	connStr := os.Getenv("connectionString")
+	config, err := pgxpool.ParseConfig(connStr)
 	if err != nil {
 		log.Fatal("error configuring the database: ", err)
 	}
-
-	dbConnection, err = pgx.ConnectConfig(context.Background(), config)
-	if err != nil {
-		log.Fatal("error connecting to the database: ", err)
-	}
-	defer dbConnection.Close(context.Background())
-
-	_, err = dbConnection.Query(context.Background(), "DELETE FROM Locations WHERE locationName = $1", locationName)
-	if err != nil {
-		log.Fatal(err)
+	config.AfterConnect = func(ctx context.Context, conn *pgx.Conn) error {
+		//no need to do anything with a new connection added to the pool.
+		return nil
 	}
 
-	return Location{
-		LocationName: locationName,
-	}, err
+	databaseConnection, err = pgxpool.ConnectConfig(context.Background(), config)
 }
 
 // FindAllLocations - Get all locations
 func (s *DefaultApiService) FindAllLocations() ([]Location, error) {
-	var dbConnection *pgx.Conn
-	//TODO: un-hard code this and read in connString from a file (user is also only on my local test DB and not running on a prod DB).
-	config, err := pgx.ParseConfig("postgresql://maxroach@localhost:26257/defaultdb?sslmode=disable")
-	if err != nil {
-		log.Fatal("error configuring the database: ", err)
-	}
-
-	dbConnection, err = pgx.ConnectConfig(context.Background(), config)
-	if err != nil {
-		log.Fatal("error connecting to the database: ", err)
-	}
-	defer dbConnection.Close(context.Background())
-
-	rows, err := dbConnection.Query(context.Background(), "SELECT * FROM Locations")
+	rows, err := databaseConnection.Query(context.Background(), "SELECT * FROM Locations;")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -120,20 +84,7 @@ func (s *DefaultApiService) FindAllLocations() ([]Location, error) {
 
 // FindLocation - Find a location
 func (s *DefaultApiService) FindLocation(locationName string) ([]Location, error) {
-	var dbConnection *pgx.Conn
-	//TODO: un-hard code this and read in connString from a file (user is also only on my local test DB and not running on a prod DB).
-	config, err := pgx.ParseConfig("postgresql://maxroach@localhost:26257/defaultdb?sslmode=disable")
-	if err != nil {
-		log.Fatal("error configuring the database: ", err)
-	}
-
-	dbConnection, err = pgx.ConnectConfig(context.Background(), config)
-	if err != nil {
-		log.Fatal("error connecting to the database: ", err)
-	}
-	defer dbConnection.Close(context.Background())
-
-	rows, err := dbConnection.Query(context.Background(), "SELECT * FROM Locations WHERE locationName = $1", locationName)
+	rows, err := databaseConnection.Query(context.Background(), "SELECT * FROM Locations WHERE locationName = $1", locationName)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -163,22 +114,21 @@ func (s *DefaultApiService) FindLocation(locationName string) ([]Location, error
 	return locations, err
 }
 
+// DeleteLocation - Delete a location
+func (s *DefaultApiService) DeleteLocation(locationName string) (Location, error) {
+	_, err := databaseConnection.Query(context.Background(), "DELETE FROM Locations WHERE locationName = $1", locationName)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return Location{
+		LocationName: locationName,
+	}, err
+}
+
 // InsertLocation - Insert a new location
 func (s *DefaultApiService) InsertLocation(locationName string, latitude float32, longitude float32, description string) (Location, error) {
-	//TODO: cleanup database conn code and simplify instead of reconnecting everytime
-	var dbConnection *pgx.Conn
-	config, err := pgx.ParseConfig("postgresql://maxroach@localhost:26257/defaultdb?sslmode=disable")
-	if err != nil {
-		log.Fatal("error configuring the database: ", err)
-	}
-
-	dbConnection, err = pgx.ConnectConfig(context.Background(), config)
-	if err != nil {
-		log.Fatal("error connecting to the database: ", err)
-	}
-	defer dbConnection.Close(context.Background())
-
-	_, err = dbConnection.Exec(context.Background(), "INSERT INTO Locations (locationName, latitude, longitude, description) VALUES ($1, $2, $3, $4)", locationName, latitude, longitude, description)
+	_, err := databaseConnection.Exec(context.Background(), "INSERT INTO Locations (locationName, latitude, longitude, description) VALUES ($1, $2, $3, $4)", locationName, latitude, longitude, description)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -193,20 +143,7 @@ func (s *DefaultApiService) InsertLocation(locationName string, latitude float32
 
 // UpdateLocation - Update an existing location
 func (s *DefaultApiService) UpdateLocation(locationName string, description string) (Location, error) {
-	var dbConnection *pgx.Conn
-	//TODO: un-hard code this and read in connString from a file (user is also only on my local test DB and not running on a prod DB).
-	config, err := pgx.ParseConfig("postgresql://maxroach@localhost:26257/defaultdb?sslmode=disable")
-	if err != nil {
-		log.Fatal("error configuring the database: ", err)
-	}
-
-	dbConnection, err = pgx.ConnectConfig(context.Background(), config)
-	if err != nil {
-		log.Fatal("error connecting to the database: ", err)
-	}
-	defer dbConnection.Close(context.Background())
-
-	_, err = dbConnection.Query(context.Background(), "UPDATE Locations SET description = $1 WHERE locationName = $2", description, locationName)
+	_, err := databaseConnection.Exec(context.Background(), "UPDATE Locations SET description = $1 WHERE locationName = $2", description, locationName)
 	if err != nil {
 		log.Fatal(err)
 	}
