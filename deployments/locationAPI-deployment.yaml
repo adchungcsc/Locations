@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: sample-server
-        image: locationapi
+        image: adchungcsc/locationapi
         ports:
         - containerPort: 8090
         env:
