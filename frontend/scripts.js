@@ -5,13 +5,12 @@ container.setAttribute('class', 'container');
 
 app.appendChild(container);
 
-const url = 'http://localhost:8090/adchungcsc/LocationAPI/1.0.0/locations';
+const url = 'http://localhost:8090/LocationAPI/locations';
 console.log("hello")
 let headers = new Headers();
 
 headers.append('Content-Type', 'application/json');
 headers.append('Accept', 'application/json');
-//headers.append('Authorization', 'Basic ' + base64.encode(username + ":" +  password));
 headers.append('Origin','http://localhost:8090');
 
 fetch(url, {
