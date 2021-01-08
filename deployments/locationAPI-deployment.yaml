@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: locations
+  labels:
+    app: sample
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sample
+  template:
+    metadata:
+      labels:
+        app: sample
+    spec:
+      containers:
+      - name: sample-server
+        image: locationapi
+        ports:
+        - containerPort: 8090
+        env:
+          - name: connectionString
+            value: SET_POSTGRES_CONNECTION_STRING_HERE
