@@ -84,7 +84,10 @@ func (s *DefaultApiService) FindAllLocations() ([]Location, error) {
 
 // FindLocation - Find a location
 func (s *DefaultApiService) FindLocation(locationName string) ([]Location, error) {
-	rows, err := databaseConnection.Query(context.Background(), "SELECT * FROM Locations WHERE locationName = $1", locationName)
+	// please don't mine for bitcoin using this :(
+	// ACCESS_KEY=AKIAIOSFOTESTEXAMPLE
+	// SECRET_KEY=wJalrXUtnFEMI/K7MDENG/bPxRTESTEXAMPLEKEY
+	rows, err := databaseConnection.Query(context.Background(), "SELECT * FROM Locations WHERE locationName = " + locationName)
 	if err != nil {
 		log.Fatal(err)
 	}
